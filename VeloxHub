@@ -1,0 +1,135 @@
+-- Velox Hub Key System (Lightweight English Version)
+local requiredKey = "velox123455v"
+
+-- Small delay for stability
+task.wait(1)
+
+local player = game:GetService("Players").LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "VeloxKeyGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 320, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -90)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "Velox Hub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, 0, 0, 20)
+subtitle.Position = UDim2.new(0, 0, 0, 35)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Key System"
+subtitle.TextColor3 = Color3.fromRGB(180, 180, 180)
+subtitle.TextSize = 14
+subtitle.Font = Enum.Font.Gotham
+subtitle.Parent = mainFrame
+
+-- Key Input Box
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(0.9, 0, 0, 35)
+textBox.Position = UDim2.new(0.05, 0, 0, 70)
+textBox.PlaceholderText = "Enter key here..."
+textBox.Text = ""
+textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.TextSize = 16
+textBox.Font = Enum.Font.Gotham
+textBox.ClearTextOnFocus = false
+textBox.Parent = mainFrame
+
+local tbCorner = Instance.new("UICorner")
+tbCorner.CornerRadius = UDim.new(0, 8)
+tbCorner.Parent = textBox
+
+-- Submit Button
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.9, 0, 0, 35)
+button.Position = UDim2.new(0.05, 0, 0, 115)
+button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+button.Text = "Verify Key"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 16
+button.Font = Enum.Font.GothamBold
+button.Parent = mainFrame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 8)
+btnCorner.Parent = button
+
+-- Key Check Function
+button.MouseButton1Click:Connect(function()
+    if textBox.Text == requiredKey then
+        -- Success
+        screenGui:Destroy()
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "✅ Success",
+            Text = "Key accepted! Loading Velox Hub...",
+            Duration = 5
+        })
+        
+        print("✅ Key accepted. Loading Velox Hub...")
+        
+        -- Load the main hub
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/trifonanimation-del/VeloxHub/main/Velox%20Hub"))()
+        
+    else
+        -- Wrong key
+        button.Text = "Invalid Key!"
+        button.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+        task.wait(1.5)
+        button.Text = "Verify Key"
+        button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    end
+end)
+
+-- Make the window draggable
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+mainFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+print("🟢 Lightweight Key GUI loaded. Please enter the key.")
